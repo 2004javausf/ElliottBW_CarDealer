@@ -1,0 +1,50 @@
+package com.revature.beans;
+
+public class Offer {
+	
+	private int acct_num;
+	private int car_Id;
+	private int offer;
+	
+	public Offer() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public Offer(int acct_num, int car_Id, int offer) {
+		super();
+		this.acct_num = acct_num;
+		this.car_Id = car_Id;
+		this.offer = offer;
+	}
+
+	public int getAcct_num() {
+		return acct_num;
+	}
+
+	public void setAcct_num(int acct_num) {
+		this.acct_num = acct_num;
+	}
+
+	public int getCar_Id() {
+		return car_Id;
+	}
+
+	public void setCar_Id(int car_Id) {
+		this.car_Id = car_Id;
+	}
+
+	public int getOffer() {
+		return offer;
+	}
+
+	public void setOffer(int offer) {
+		this.offer = offer;
+	}
+
+	@Override
+	public String toString() {
+		return "Offer [acct_num=" + acct_num + ", car_Id=" + car_Id + ", offer=" + offer + "]";
+	}
+
+}

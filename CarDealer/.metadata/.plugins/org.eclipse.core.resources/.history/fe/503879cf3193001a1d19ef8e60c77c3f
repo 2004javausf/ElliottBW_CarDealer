@@ -1,0 +1,13 @@
+package com.revature.cardeal;
+
+import java.util.Scanner;
+
+public class CustScreen implements CarScreen{
+
+	@Override
+	public CarScreen render(Scanner scan) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

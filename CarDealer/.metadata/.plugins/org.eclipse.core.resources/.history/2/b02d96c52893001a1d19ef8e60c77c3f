@@ -1,0 +1,14 @@
+package com.revature.cardeal;
+
+import java.util.Scanner;
+
+public class EmpMain implements CarScreen {
+
+	@Override
+	public CarScreen render(Scanner scan) {
+		System.out.println("You got here!!!");
+		Driver.isRunning = false;
+		return null;
+	}
+
+}

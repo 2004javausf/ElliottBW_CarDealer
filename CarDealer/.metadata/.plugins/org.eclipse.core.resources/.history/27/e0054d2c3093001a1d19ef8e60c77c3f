@@ -1,0 +1,67 @@
+package com.revature.daoimpl;
+
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Scanner;
+
+import com.revature.dao.EmpDao;
+import com.revature.extramethods.MathTime;
+import com.revature.util.ConnFactory;
+
+public class EmpDaoImpl implements EmpDao {
+public static ConnFactory cf = ConnFactory.getInstance();
+private static final MathTime mt = new MathTime();
+
+	@Override
+	public void login() throws SQLException {
+		int num;
+		String pass;
+		Scanner sc = new Scanner(System.in);
+		Scanner sc2 = new Scanner(System.in);
+		System.out.println("Enter Employee ID");
+		num = sc.nextInt();
+		System.out.println("Enter Password");
+		pass = sc2.nextLine();
+		Connection conn = cf.getConnection();
+		Statement stm = conn.createStatement();
+		String sql = "SELECT ACCT_NUM, PASS FROM EMP WHERE ACCT_NUM = " + num + " AND PASS = '" + pass + "'";
+		ResultSet rs = stm.executeQuery(sql);
+		if(rs.next() == false) {
+			System.out.println("Incorrect Login Info");
+			login();
+		}
+		else {
+			System.out.println("Welcome Employee");
+		}
+		
+	}
+
+	@Override
+	public void createEmp(int acct_num, String pass) throws SQLException {
+		Connection conn = cf.getConnection();
+		String sql = "{ call MYEMPPRO(?,?)";
+		CallableStatement call = conn.prepareCall(sql);
+		call.setInt(1, acct_num);
+		call.setString(2, pass);
+		call.execute();
+	}
+
+	@Override
+	public void createCar(int car_Id, String car_Make, String car_Model, String car_Color, int owner) throws SQLException {
+
+		Connection conn = cf.getConnection();
+		String sql = "INSERT INTO CAR VALUES(?,?,?,?,?)";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, car_Id);
+		ps.setString(2, car_Make);
+		ps.setString(3, car_Model);
+		ps.setString(4, car_Color);
+		ps.setInt(5, owner);
+		ps.executeUpdate();
+	}
+
+}

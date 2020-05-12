@@ -1,0 +1,26 @@
+package com.revature.daoimpl;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import com.revature.dao.CustDao;
+import com.revature.util.ConnFactory;
+
+public class CustDaoImpl implements CustDao{
+	public static ConnFactory cf = ConnFactory.getInstance();
+	
+	@Override
+	public void createCust(int acct_num, String password, String f_Name, String l_name) throws SQLException {
+		
+		Connection conn = cf.getConnection();
+		String sql = "INSERT INTO CUSTOMER VALUES(?,?,?,?)";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, acct_num);
+		ps.setString(2, password);
+		ps.setString(3, f_Name);
+		ps.setString(4, l_name);
+		ps.executeUpdate();
+	}
+
+}

@@ -1,0 +1,71 @@
+package com.revature.beans;
+
+public class Car {
+	
+	private int car_Id;
+	private String car_Make;
+	private String car_Model;
+	private String car_Color;
+	private int car_Owner;
+	
+	public Car() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public Car(int car_Id, String car_Make, String car_Model, String car_Color, int car_Owner) {
+		super();
+		this.car_Id = car_Id;
+		this.car_Make = car_Make;
+		this.car_Model = car_Model;
+		this.car_Color = car_Color;
+		this.car_Owner = car_Owner;
+	}
+
+	public int getCar_Id() {
+		return car_Id;
+	}
+
+	public void setCar_Id(int car_Id) {
+		this.car_Id = car_Id;
+	}
+
+	public String getCar_Make() {
+		return car_Make;
+	}
+
+	public void setCar_Make(String car_Make) {
+		this.car_Make = car_Make;
+	}
+
+	public String getCar_Model() {
+		return car_Model;
+	}
+
+	public void setCar_Model(String car_Model) {
+		this.car_Model = car_Model;
+	}
+
+	public String getCar_Color() {
+		return car_Color;
+	}
+
+	public void setCar_Color(String car_Color) {
+		this.car_Color = car_Color;
+	}
+
+	public int getCar_Owner() {
+		return car_Owner;
+	}
+
+	public void setCar_Owner(int car_Owner) {
+		this.car_Owner = car_Owner;
+	}
+
+	@Override
+	public String toString() {
+		return "Car [car_Id=" + car_Id + ", car_Make=" + car_Make + ", car_Model=" + car_Model + ", car_Color="
+				+ car_Color + ", car_Owner=" + car_Owner + "]";
+	}
+
+}

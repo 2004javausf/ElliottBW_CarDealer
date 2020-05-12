@@ -1,0 +1,110 @@
+package com.revature.daoimpl;
+
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+import com.revature.beans.Car;
+import com.revature.beans.Offer;
+import com.revature.dao.EmpDao;
+import com.revature.util.ConnFactory;
+
+public class EmpDaoImpl implements EmpDao {
+public static ConnFactory cf = ConnFactory.getInstance();
+
+	@Override
+	public void login() throws SQLException {
+		int num;
+		String pass;
+		Scanner sc = new Scanner(System.in);
+		Scanner sc2 = new Scanner(System.in);
+		System.out.println("Enter Employee ID");
+		num = sc.nextInt();
+		System.out.println("Enter Password");
+		pass = sc2.nextLine();
+		Connection conn = cf.getConnection();
+		Statement stm = conn.createStatement();
+		String sql = "SELECT ACCT_NUM, PASS FROM EMP WHERE ACCT_NUM = " + num + " AND PASS = '" + pass + "'";
+		ResultSet rs = stm.executeQuery(sql);
+		if(rs.next() == false) {
+			System.out.println("Incorrect Login Info");
+			login();
+		}
+		else {
+			System.out.println("Welcome Employee");
+		}
+		
+	}
+
+	@Override
+	public void createEmp(int acct_num, String pass) throws SQLException {
+		Connection conn = cf.getConnection();
+		String sql = "{ call MYEMPPRO(?,?)";
+		CallableStatement call = conn.prepareCall(sql);
+		call.setInt(1, acct_num);
+		call.setString(2, pass);
+		call.execute();
+	}
+
+	@Override
+	public void createCar(int car_Id, String car_Make, String car_Model, String car_Color, int owner) throws SQLException {
+
+		Connection conn = cf.getConnection();
+		String sql = "INSERT INTO CAR VALUES(?,?,?,?,?)";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, car_Id);
+		ps.setString(2, car_Make);
+		ps.setString(3, car_Model);
+		ps.setString(4, car_Color);
+		ps.setInt(5, owner);
+		ps.executeUpdate();
+	}
+
+	@Override
+	public List<Car> getCarList() throws SQLException {
+		List<Car> carList = new ArrayList<Car>();
+		Connection conn = cf.getConnection();
+		Statement stm = conn.createStatement();
+		ResultSet rs = stm.executeQuery("SELECT * FROM CAR");
+		Car c = null;
+		while(rs.next()) {
+			c = new Car(rs.getInt(1), rs.getString(2), rs.getString(3),rs.getString(4),rs.getInt(5));
+			carList.add(c);
+		}
+		return carList;
+	}
+
+	@Override
+	public void removeCar() throws SQLException {
+		int num;
+		Scanner sc1 = new Scanner(System.in);
+		System.out.println("What is the id of the car you would like to remove?");
+		num = sc1.nextInt();
+		Connection conn = cf.getConnection();
+		String sql = "DELETE FROM CAR WHERE CAR_ID = " +num;
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.executeUpdate();
+		
+	}
+
+	@Override
+	public List<Offer> getOfferList() throws SQLException {
+		List<Offer> offList = new ArrayList<Offer>();
+		Connection conn = cf.getConnection();
+		Statement stm = conn.createStatement();
+		ResultSet rs = stm.executeQuery("SELECT * FROM OFFER");
+		Offer o = null;
+		while(rs.next()) {
+			o = new Offer(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4));
+			offList.add(o);
+		}
+		return offList;
+	}
+
+}

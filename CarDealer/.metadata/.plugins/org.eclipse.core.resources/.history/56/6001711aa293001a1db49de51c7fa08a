@@ -1,0 +1,10 @@
+package com.revature.dao;
+
+import java.sql.SQLException;
+
+public interface CustDao {
+	
+	public void createCust(int acct_num, String password, String f_Name, String l_name) throws SQLException;
+
+	public void login() throws SQLException;
+}

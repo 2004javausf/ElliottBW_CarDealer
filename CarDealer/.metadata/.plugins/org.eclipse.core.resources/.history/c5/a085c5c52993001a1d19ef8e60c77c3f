@@ -1,0 +1,38 @@
+package com.revature.daoimpl;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Scanner;
+
+import com.revature.dao.EmpDao;
+import com.revature.util.ConnFactory;
+
+public class EmpDaoImpl implements EmpDao {
+public static ConnFactory cf = ConnFactory.getInstance();
+	@Override
+	public void login() throws SQLException {
+		int num;
+		String pass;
+		Scanner sc = new Scanner(System.in);
+		Scanner sc2 = new Scanner(System.in);
+		System.out.println("Enter Employee ID");
+		num = sc.nextInt();
+		System.out.println("Enter Password");
+		pass = sc2.nextLine();
+		Connection conn = cf.getConnection();
+		Statement stm = conn.createStatement();
+		String sql = "SELECT ACCT_NUM, PASS FROM EMP WHERE ACCT_NUM = " + num + " AND PASS = '" + pass + "'";
+		ResultSet rs = stm.executeQuery(sql);
+		if(rs.next() == false) {
+			System.out.println("Incorrect Login Info");
+			login();
+		}
+		else {
+			System.out.println("Welcome Employee");
+		}
+		
+	}
+
+}
