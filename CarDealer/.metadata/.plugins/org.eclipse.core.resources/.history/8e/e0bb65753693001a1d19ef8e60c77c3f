@@ -1,0 +1,12 @@
+package com.revature.cardeal;
+
+import java.util.Scanner;
+
+public class CustLogin implements CarScreen {
+	
+	@Override
+	public CarScreen render(Scanner scan) {
+		return new EmpMain().render(scan);
+	}
+
+}

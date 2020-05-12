@@ -1,0 +1,33 @@
+package com.revature.cardeal;
+
+import java.util.Scanner;
+
+public class CustScreen implements CarScreen{
+	String choice;
+
+	@Override
+	public CarScreen render(Scanner scan) {
+		System.out.println("Welcome Customer what would you like to do?");
+		System.out.println("Please select option from the menu.");
+		System.out.println("1: Create new account");
+		System.out.println("2: Login");
+		choice = scan.nextLine();
+		
+		if(choice.equals("1")) {
+			System.out.println("cust new");
+		}
+		
+		else if (choice.equals("2")) {
+			return new CustLogin().render(scan);
+		}
+		
+		else {
+			System.out.println("Invalid Entry");
+			return new CustScreen().render(scan);
+		}
+		
+		System.out.println("Thanks for signing up!");
+		return new MainDealerScreen().render(scan);
+	}
+
+}

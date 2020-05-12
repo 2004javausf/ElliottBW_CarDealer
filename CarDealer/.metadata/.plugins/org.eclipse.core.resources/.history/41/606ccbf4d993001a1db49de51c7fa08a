@@ -1,0 +1,166 @@
+package com.revature.daoimpl;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+import com.revature.dao.CustDao;
+import com.revature.extramethods.MathTime;
+import com.revature.util.ConnFactory;
+import com.revature.beans.Car;
+import com.revature.cardeal.CustLogin;
+
+public class CustDaoImpl implements CustDao{
+	public static ConnFactory cf = ConnFactory.getInstance();
+	private static final MathTime mt = new MathTime();
+	
+	@Override
+	public void createCust(int acct_num, String password, String f_Name, String l_name) throws SQLException {
+		
+		Connection conn = cf.getConnection();
+		String sql = "INSERT INTO CUSTOMER VALUES(?,?,?,?)";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, acct_num);
+		ps.setString(2, password);
+		ps.setString(3, f_Name);
+		ps.setString(4, l_name);
+		ps.executeUpdate();
+	}
+
+	@Override
+	public void login() throws SQLException {
+		
+		int num;
+		String pass;
+		Scanner sc = new Scanner(System.in);
+		Scanner sc2 = new Scanner(System.in);
+		System.out.println("Enter Customer ID");
+		num = sc.nextInt();
+		System.out.println("Enter Password");
+		pass = sc2.nextLine();
+		Connection conn = cf.getConnection();
+		Statement stm = conn.createStatement();
+		String sql = "SELECT ACCT_NUM, PASS FROM CUSTOMER WHERE ACCT_NUM = " + num + " AND PASS = '" + pass + "'";
+		ResultSet rs = stm.executeQuery(sql);
+		if(rs.next() == false) {
+			System.out.println("Incorrect Login Info");
+			login();
+		}
+		else {
+			System.out.println("Welcome Customer");
+			CustLogin.uNum = num;
+		}
+		
+	}
+
+	@Override
+	public void makeOffer(int acct_num, int car_Id, int offer, int offer_Id) throws SQLException {
+		Connection conn = cf.getConnection();
+		String sql = "INSERT INTO OFFER VALUES(?,?,?,?)";
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.setInt(1, acct_num);
+		ps.setInt(2, car_Id);
+		ps.setInt(3, offer);
+		ps.setInt(4, offer_Id);
+		ps.executeUpdate();
+	}
+
+	@Override
+	public List<Car> getCarOwned() throws SQLException {
+		List<Car> carOwnList = new ArrayList<Car>();
+		int num = CustLogin.uNum;
+		Connection conn = cf.getConnection();
+		Statement stm = conn.createStatement();
+		ResultSet rs = stm.executeQuery("SELECT * FROM CAR WHERE CAR_OWNER =" + num);
+		Car c = null;
+		while(rs.next()) {
+			c = new Car(rs.getInt(1), rs.getString(2), rs.getString(3),rs.getString(4),rs.getInt(5));
+			carOwnList.add(c);
+		}
+		return carOwnList;
+	}
+
+	@Override
+	public void getBalance() throws SQLException {
+		int num = CustLogin.uNum;
+		Connection conn = cf.getConnection();
+		Statement stm = conn.createStatement();
+		ResultSet rs = stm.executeQuery("SELECT * FROM PAYMENT WHERE ACCT_NUM =" + num);
+		while(rs.next()) {
+			System.out.println("Your remaining balance is $" + rs.getInt(4) + ". Payments remaining: " + rs.getInt(5));
+		}
+	}
+
+	@Override
+	public void makePayment() throws SQLException {
+		int numPay = 0;
+		int num = CustLogin.uNum;
+		int carNum;
+		int pay_Rem = 0;
+		int cBal = 0;
+		int oBal = 0;
+		Scanner scanz = new Scanner(System.in);
+		
+		System.out.println("Enter the Car ID of the car you are going to make a payment on.");
+		carNum = scanz.nextInt();
+		System.out.println("Enter how many payment you would like to make");
+		numPay = scanz.nextInt();
+		Connection conn = cf.getConnection();
+		Statement stm = conn.createStatement();
+		ResultSet rs = stm.executeQuery("SELECT * FROM PAYMENT WHERE ACCT_NUM =" + num + "AND CAR_ID =" + carNum);
+		if(rs.next() == false) {
+			System.out.println("Invalid Entry");
+			makePayment();
+		}
+		
+		else {
+			ResultSet rs2 = stm.executeQuery("SELECT * FROM PAYMENT WHERE ACCT_NUM =" + num + "AND CAR_ID =" + carNum);
+			while(rs2.next()) {
+				pay_Rem = rs2.getInt(5);
+				cBal = rs2.getInt(4);
+				oBal = rs2.getInt(3);
+			}
+			
+			int uPay = mt.DivideBy12(oBal);
+			int aPay = uPay * numPay;
+			int newBal = mt.Subtraction(cBal, aPay);
+			int pLeft = mt.Subtraction(pay_Rem, numPay);
+			
+			if(pLeft == -1) {
+				System.out.println("You cannot make that many payments");
+				makePayment();
+			}
+			
+			else if(newBal == -1) {
+				newBal = 0;
+				String sql = "UPDATE PAYMENT SET PAY_LEFT =" +pLeft+ "WHERE ACCT_NUM =" + num;
+				PreparedStatement ps = conn.prepareStatement(sql);
+				ps.executeUpdate();
+				
+				String sql2 = "UPDATE PAYMENT SET AMT_LEFT =" +0+ "WHERE ACCT_NUM =" + num;
+				PreparedStatement ps2 = conn.prepareStatement(sql2);
+				ps2.executeUpdate();
+				
+				System.out.println("Your new balance is $" + newBal + ". Remaining payments: " + pLeft);
+			}
+			
+			else {
+				String sql = "UPDATE PAYMENT SET PAY_LEFT =" +pLeft+ "WHERE ACCT_NUM =" + num;
+				PreparedStatement ps = conn.prepareStatement(sql);
+				ps.executeUpdate();
+				
+				String sql2 = "UPDATE PAYMENT SET AMT_LEFT =" +newBal+ "WHERE ACCT_NUM =" + num;
+				PreparedStatement ps2 = conn.prepareStatement(sql2);
+				ps2.executeUpdate();
+				
+				System.out.println("Your new balance is $" + newBal + ". Remaining payments: " + pLeft);
+			}
+		}
+	}
+
+}
